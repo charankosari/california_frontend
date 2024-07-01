@@ -1,11 +1,11 @@
 import React from 'react';
-import { AiOutlineRobot } from 'react-icons/ai'; // Import AI icon from React Icons library or your preferred icon library
+import { MessageOutlined } from '@ant-design/icons'; // Import Message icon from Ant Design Icons
 import './AIChatButton.css'; // Import CSS for styling
 
 const AIChatButton = ({ onClick }) => {
   return (
     <button className="ai-chat-button" onClick={onClick}>
-      <AiOutlineRobot className="ai-icon" />
+      <MessageOutlined className="ai-icon" />
     </button>
   );
 };
