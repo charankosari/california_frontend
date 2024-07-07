@@ -124,3 +124,7 @@
 .close-button:hover {
   color: #333;
 }
+
+.message{
+  max-width: 100%;
+}

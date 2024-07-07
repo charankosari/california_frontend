@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Link,  } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './Log.css';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom';
+import { ClipLoader } from 'react-spinners'; // Import ClipLoader from react-spinners
 
 const Signup = () => {
   const navigate = useHistory();
@@ -11,25 +11,54 @@ const Signup = () => {
     email: '',
     number: '',
     password: '',
-    address: '',
+    addresses: [
+      {
+        address: '',
+        pincode: '',
+      }
+    ],
     gender: 'male', // Default gender
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // State to manage loading state
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('http://localhost:9999/api/c3/user/register', formData);
-      navigate('/login'); // Redirect on success
-    } catch (error) {
-      console.error('Signup error:', error);
-      alert(error.response.data.error); // Show the error message to the user
+    const { name, value } = e.target;
+    if (name === 'address' || name === 'pincode') {
+      const updatedAddresses = formData.addresses.map((addr, index) => {
+        if (index === 0) { // Assuming only one address for simplicity, modify as needed
+          return {
+            ...addr,
+            [name]: value,
+          };
+        }
+        return addr;
+      });
+      setFormData({
+        ...formData,
+        addresses: updatedAddresses,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await axios.post('http://localhost:9999/api/c3/user/register', formData);
+      setIsLoading(false); 
+      navigate('/login'); 
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert(error.response.data.error);
+      setIsLoading(false); 
+    }
+  };
+  
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -64,7 +93,15 @@ const Signup = () => {
             type="text"
             name="address"
             placeholder="Address"
-            value={formData.address}
+            value={formData.addresses[0].address}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="pincode"
+            placeholder="Pincode"
+            value={formData.addresses[0].pincode}
             onChange={handleChange}
             required
           />
@@ -86,7 +123,9 @@ const Signup = () => {
             onChange={handleChange}
             required
           />
-          <button type="submit">Signup</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? <ClipLoader size={24} color="#ffffff" loading={isLoading} /> : 'Signup'}
+          </button>
         </form>
         <p>
           Already have an account? <Link to="/login">Login</Link>

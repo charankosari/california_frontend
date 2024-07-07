@@ -1,67 +1,97 @@
 .profile-section {
-    height: 80vh;
-    background-color: #f4f5f7;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .profile-container {
-    width: 60%;
-  }
-  
-  .profile-card {
-    display: flex;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-  }
-  
-  .profile-card-left {
-    background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
-    text-align: center;
-    color: white;
-    padding: 2rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .profile-avatar {
-    width: 80px;
-    margin-bottom: 1rem;
-    border-radius: 50%;
-  }
-  
-  .profile-card-body {
-    padding: 2rem;
-    flex: 2;
-  }
-  
-  .profile-hr {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-  }
-  
-  .profile-info {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1.5rem;
-  }
-  
-  .profile-info-item {
-    margin-bottom: 1rem;
-  }
-  
-  .text-muted {
-    color: #6c757d !important;
-  }
-  
-  .profile-actions {
-    display: flex;
-    gap: 1rem;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.profile-container {
+  max-width: 800px;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.profile-card {
+  display: flex;
+  padding: 20px;
+}
+
+.profile-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.edit-icon {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.profile-card-body {
+  flex: 1;
+}
+
+.profile-hr {
+  margin: 10px 0;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-info-item {
+  margin-bottom: 15px;
+}
+
+.profile-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #333;
+}
+
+.text-muted {
+  color: #6c757d;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.profile-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.save-button {
+  background-color: #2BB673;
+}
+
+.cancel-button {
+  background-color: #dc3545;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

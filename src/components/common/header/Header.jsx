@@ -1,18 +1,23 @@
-import React, { useState } from "react"
-import "./header.css"
-import { nav } from "../../data/Data"
-import { Link } from "react-router-dom/cjs/react-router-dom"
-import logo from '../../images/logo.png'
-const Header = ({login}) => {
-  const [navList, setNavList] = useState(false)
+import React, { useState } from "react";
+import "./header.css";
+import { nav } from "../../data/Data";
+import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import logo from '../../images/logo.png';
+
+const Header = () => {
+  const history = useHistory();
+  const [navList, setNavList] = useState(false);
+  const isLoggedIn = localStorage.getItem('jwtToken'); // Check if user is logged in
 
   return (
     <>
       <header>
         <div className='container flex'>
-       <Link to='/'>   <div className='logo'>
-            <img src={logo} alt='' />
-          </div>
+          <Link to='/'>
+            <div className='logo'>
+              <img src={logo} alt='' />
+            </div>
           </Link>
           <div className='nav'>
             <ul className={navList ? "small" : "flex"}>
@@ -27,21 +32,27 @@ const Header = ({login}) => {
             <h4>
               <span>2</span> My List
             </h4>
-            {login?  <Link to='/profile'><button className='btn1'>
-              <i className='fa fa-sign-out'></i> Profile
-            </button></Link> :   <button className='btn1' onClick={() => window.location.href = '/login'}>
-              <i className='fa fa-sign-out'></i> Sign In
-            </button> }
-         
+            {isLoggedIn ? (
+              <Link to='/profile'>
+                <button className='btn1'>
+                  <i className='fa fa-sign-out'></i> Profile
+                </button>
+              </Link>
+            ) : (
+              <button className='btn1' onClick={() => { history.push('/login') }}>
+                <i className='fa fa-sign-out'></i> Sign In
+              </button>
+            )}
           </div>
-
           <div className='toggle'>
-            <button onClick={() => setNavList(!navList)}>{navList ? <i className='fa fa-times'></i> : <i className='fa fa-bars'></i>}</button>
+            <button onClick={() => setNavList(!navList)}>
+              {navList ? <i className='fa fa-times'></i> : <i className='fa fa-bars'></i>}
+            </button>
           </div>
         </div>
       </header>
     </>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

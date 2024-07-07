@@ -37,6 +37,8 @@ header .toggle {
 @media screen and (max-width: 768px) {
   header {
     padding: 0;
+    height: 15vh;
+
   }
   header img {
     margin-top: 30px;
@@ -53,6 +55,7 @@ header .toggle {
   }
   header .small {
     position: absolute;
+    margin-top: 25px;
     top: 10vh;
     left: 0;
     width: 100%;

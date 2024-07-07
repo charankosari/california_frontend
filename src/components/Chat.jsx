@@ -24,20 +24,18 @@ const Chat = ({ onClose }) => {
 
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputMessage('');
+    const url='http://localhost:9999'
 
     try {
       const apiUrl = messages.length === 0
-        ? 'http://localhost:9999/api/c3/user/greetchat'
-        : 'http://localhost:9999/api/c3/user/chat';
+        ? `${url}/api/c3/user/greetchat`
+        : `${url}/api/c3/user/chat`;
 
       const jwtToken = localStorage.getItem('jwtToken');
       if (!jwtToken) {
         throw new Error('JWT token not found in localStorage');
       }
-
-      // Start typing animation
       setTyping(true);
-
       const response = await axios.post(apiUrl, {
         question: newMessage.text,
       }, {
@@ -45,19 +43,14 @@ const Chat = ({ onClose }) => {
           Authorization: `Bearer ${jwtToken}`
         }
       });
-
-      // Stop typing animation
       setTyping(false);
-
       const cleanText = (text) => {
         return text.replace(/\*\*.*?\*\*|\n/g, '').trim();
       };
-
       const botResponse = {
         sender: 'bot',
         text: cleanText(response.data.response),
       };
-
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages, botResponse];
         sessionStorage.setItem('chatMessages', JSON.stringify(updatedMessages));
@@ -67,7 +60,6 @@ const Chat = ({ onClose }) => {
       console.error('Error sending/receiving message:', error);
     }
   };
-
   const handleCloseChat = () => {
     sessionStorage.removeItem('chatMessages');
     if (onClose && typeof onClose === 'function') {
@@ -76,7 +68,6 @@ const Chat = ({ onClose }) => {
       console.error('onClose is not a function or not provided');
     }
   };
-
   const TypingAnimation = () => {
     return (
       <div className="typing-animation">
@@ -86,7 +77,6 @@ const Chat = ({ onClose }) => {
       </div>
     );
   };
-
   return (
     <div className="mobile-chat-container">
       <div className="mobile-chat-border">
@@ -95,7 +85,7 @@ const Chat = ({ onClose }) => {
           <h5>Chatbot</h5>
           <button className="close-button" onClick={handleCloseChat}>✖</button>
         </div>
-        <div className="chat-messages">
+        <div className="chat-messages " style={{width:'80%'}}>
           {messages.map((message, index) => (
             <div key={index} className={`message ${message.sender}`}>
               {message.text}
