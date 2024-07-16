@@ -21,8 +21,8 @@ const FormCard = styled(Paper)({
 });
 
 const ResetPasswordForm = () => {
-  const { id } = useParams(); // Extract the reset token from the URL params
-  const history = useHistory(); // Get the history object for navigation
+  const { id } = useParams();
+  const history = useHistory(); 
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: ''
@@ -54,7 +54,6 @@ const ResetPasswordForm = () => {
       setError('');
       console.log('Password reset successful:', response.data);
       
-      // Navigate to another route after successful password reset
       history.push('/'); // Change '/' to the desired route after resetting password
     } catch (error) {
       console.error('Reset password error:', error.response.data);
