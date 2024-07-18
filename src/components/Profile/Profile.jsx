@@ -269,7 +269,7 @@ const Profile = ({ login }) => {
                 )}
               </Grid>
             </Grid>
-            {isEditing && (
+            {isEditing && ( 
               <div
                 style={{
                   marginTop: "20px",

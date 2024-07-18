@@ -10,6 +10,9 @@ import Profile from "../Profile/Profile";
 import Chat from "../Chat";
 import DetailedView from '../home/recent/DetailedView'
 import ResetPassword from './ResetPassword'
+import PaymentPage from "../payment/payment";
+import BookingList from "../bookings/BookingList";
+import ThankYouPage from "../Confirm/Confirm";
 const Pages = () => {
   const [login, setLogin] = useState(false);
   const handleLogin = () => {
@@ -27,6 +30,9 @@ const Pages = () => {
           <Route exact path='/services' component={Services} />
           <Route exact path='/profile' render={(props) => <Profile {...props} login={login} handleLogin={handleLogin} />} />
           <Route exact path='/contact' component={Contact} />
+          <Route exact path='/payment' component={PaymentPage} />
+          <Route exact path='/bookings' component={BookingList} />
+          <Route exact path='/confirm' component={ThankYouPage} />
           <Route path="/details/:id" component={DetailedView} />
           <Route path="/resetpassword/:id" component={ResetPassword} />
           <Route path='/chat' component={Chat}/>

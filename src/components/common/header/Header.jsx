@@ -30,7 +30,7 @@ const Header = () => {
           </div>
           <div className='button flex'>
             <h4>
-              <span>2</span> My List
+            <Link to='/bookings'>   My Bookings</Link>
             </h4>
             {isLoggedIn ? (
               <Link to='/profile'>

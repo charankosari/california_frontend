@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Grid, Card, CardContent, CardHeader, Divider } from '@mui/material';
+import { useHistory } from 'react-router-dom'; // Import useHistory for navigation
+import { Typography, Grid, Card, CardContent, CardHeader, Divider, Button } from '@mui/material';
 import Header from '../../common/header/Header';
 import Footer from '../../common/footer/Footer';
 import { FaHeart, FaRegHeart } from 'react-icons/fa'; // Import React icons
 import axios from 'axios';
 
 const DetailedView = () => {
+  const history = useHistory(); // Initialize useHistory for navigation
   const service = JSON.parse(sessionStorage.getItem('selectedService'));
   const [isFavorited, setIsFavorited] = useState(false);
+
+  console.log(service)
 
   useEffect(() => {
     const fetchFavoriteServiceIds = async () => {
@@ -40,6 +44,13 @@ const DetailedView = () => {
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
+  };
+
+  const handleBookNow = () => {
+    history.push({
+      pathname: '/payment',
+      state: { service }, // Pass service data to the payment page
+    });
   };
 
   if (!service) {
@@ -86,6 +97,14 @@ const DetailedView = () => {
                 <span key={index}>{`${addr.address}, ${addr.pincode}`}</span>
               ))}
             </Typography>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
+              <Typography variant="h5" style={{ marginRight: '20px' }}>
+                <strong>Price:</strong> ${service.amount}
+              </Typography>
+              <Button variant="contained" color="primary" onClick={handleBookNow}>
+                Book Now
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
