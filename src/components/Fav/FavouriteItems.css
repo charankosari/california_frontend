@@ -1,0 +1,20 @@
+.booking-list {
+    padding: 20px;
+  }
+  
+  .booking-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .booking-image {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+  }
+  
+  .booking-details {
+    flex: 1;
+  }
+  

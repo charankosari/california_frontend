@@ -31,6 +31,8 @@ const Header = () => {
           <div className='button flex'>
             <h4>
             <Link to='/bookings'>   My Bookings</Link>
+            </h4><h4>
+            <Link to='/fav'>Favourites</Link>
             </h4>
             {isLoggedIn ? (
               <Link to='/profile'>
@@ -43,6 +45,7 @@ const Header = () => {
                 <i className='fa fa-sign-out'></i> Sign In
               </button>
             )}
+            
           </div>
           <div className='toggle'>
             <button onClick={() => setNavList(!navList)}>
