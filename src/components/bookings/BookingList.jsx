@@ -11,12 +11,15 @@ const BookingList = () => {
     const fetchBookings = async () => {
       try {
         const token = localStorage.getItem('jwtToken');
+        if (!token) {
+          throw new Error('No token found');
+        }
+  
         const config = {
           headers: { Authorization: `Bearer ${token}` }
         };
-
+  
         const response = await axios.get('http://localhost:9999/api/c3/user/getbooking', config);
-        console.log(response)
         setBookings(response.data);
         setLoading(false);
       } catch (err) {
@@ -24,9 +27,10 @@ const BookingList = () => {
         setLoading(false);
       }
     };
-
+  
     fetchBookings();
   }, []);
+  
 
   if (loading) {
     return <div>Loading...</div>;
