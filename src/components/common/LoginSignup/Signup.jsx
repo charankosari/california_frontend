@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './Log.css';
-import { ClipLoader } from 'react-spinners'; // Import ClipLoader from react-spinners
+import { ClipLoader } from 'react-spinners';
 
 const Signup = () => {
   const navigate = useHistory();
@@ -17,10 +17,9 @@ const Signup = () => {
         pincode: '',
       }
     ],
-    gender: 'male', // Default gender
   });
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // State to manage loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,20 +44,23 @@ const Signup = () => {
       });
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:9999/api/c3/user/register', formData);
-      setIsLoading(false); 
-      navigate('/login'); 
+      const response = await axios.post('http://localhost:9999/api/c3/user/register', formData);
+      const { jwtToken } = response.data;
+      localStorage.setItem('jwttoken', jwtToken);
+      setIsLoading(false);
+      navigate.push('/'); // Use navigate.push to navigate to the home page
     } catch (error) {
       console.error('Signup error:', error);
       alert(error.response.data.error);
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -100,21 +102,11 @@ const Signup = () => {
           <input
             type="text"
             name="pincode"
-            placeholder="Pincode"
+            placeholder="Zipcode"
             value={formData.addresses[0].pincode}
             onChange={handleChange}
             required
           />
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
           <input
             type="password"
             name="password"
