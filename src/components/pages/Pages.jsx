@@ -13,6 +13,7 @@ import ResetPassword from './ResetPassword'
 import PaymentPage from "../payment/payment";
 import BookingList from "../bookings/BookingList";
 import ThankYouPage from "../Confirm/Confirm";
+import Success from '../../Success'
 import FavoriteItems from "../Fav/FavouriteItems";
 const Pages = () => {
   const [login, setLogin] = useState(false);
@@ -34,7 +35,7 @@ const Pages = () => {
           <Route exact path='/payment' component={PaymentPage} />
           <Route exact path='/bookings' component={BookingList} />
           <Route exact path='/fav' component={FavoriteItems} />
-
+          <Route exact path='/done' component={Success} />
           <Route exact path='/confirm' component={ThankYouPage} />
           <Route path="/details/:id" component={DetailedView} />
           <Route path="/resetpassword/:id" component={ResetPassword} />

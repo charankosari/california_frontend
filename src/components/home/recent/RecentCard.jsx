@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { TextField, Typography } from "@mui/material"; // Assuming you use MUI components
+import { TextField, Typography, Button, Grid } from "@mui/material";
 import { useHistory } from "react-router-dom";
+import { FaStar, FaUserAlt } from "react-icons/fa";
 import './recent.css';
 
 const RecentCard = () => {
@@ -24,14 +25,11 @@ const RecentCard = () => {
 
     fetchServices();
   }, []);
-
-  // Function to handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     filterServices(e.target.value);
   };
 
-  // Function to filter services based on search term
   const filterServices = (term) => {
     const filtered = services.filter(service =>
       service.name.toLowerCase().includes(term.toLowerCase()) ||
@@ -39,8 +37,6 @@ const RecentCard = () => {
     );
     setFilteredServices(filtered);
   };
-
-  // Function to categorize services based on type
   const categorizeServices = () => {
     const categorizedServices = {};
 
@@ -59,12 +55,13 @@ const RecentCard = () => {
 
   const categorizedServices = categorizeServices();
 
-  // Function to handle clicking on a service box
   const handleServiceClick = (service) => {
-    // Save service details to sessionStorage
     sessionStorage.setItem('selectedService', JSON.stringify(service));
-    // Navigate to the detailed view
     history.push(`/details/${service._id}`);
+  };
+
+  const getRandomRating = () => {
+    return Math.floor(Math.random() * 3) + 3; 
   };
 
   return (
@@ -80,14 +77,16 @@ const RecentCard = () => {
       {Object.keys(categorizedServices).length === 0 ? (
         <Typography variant="body1" style={{ marginTop: 20 }}>No services found matching your search.</Typography>
       ) : (
-        Object.keys(categorizedServices).map(serviceType => (
+        Object.keys(categorizedServices).map((serviceType, index) => (
           <div key={serviceType} style={{ marginBottom: '20px' }}>
-            <h2>{serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}</h2>
+            <h2 id={serviceType.toLowerCase().replace(/\s+/g, '-')}>{serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}</h2>
             <div className='content grid3 mtop'>
               {categorizedServices[serviceType].map((service, index) => {
-                const { _id, image, service: serviceName, addresses, name, amount, role } = service;
+                const { _id, image, service: serviceName, addresses, name, amount, role,email } = service;
                 const location = addresses.length > 0 ? addresses[0].address : "Location not provided";
-                const defaultImage = "https://via.placeholder.com/150"; 
+                const defaultImage = "https://via.placeholder.com/150";
+                const rating = getRandomRating();
+                
 
                 return (
                   <button key={index} style={{ textDecoration: 'none', border: 'none', backgroundColor: 'transparent' }} onClick={() => handleServiceClick(service)}>
@@ -96,16 +95,30 @@ const RecentCard = () => {
                         <img src={image || defaultImage} alt={serviceName} />
                       </div>
                       <div className='text'>
-                        <div className='category flex' >
+                        <div className='category flex'>
                           <span style={{ background: role === "service" ? "#25b5791a" : "#ff98001a", color: role === "service" ? "#25b579" : "#ff9800" }}>{serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}</span>
                           <i className='fa fa-heart'></i>
                         </div>
-                        {/* <h4 style={{color:'black'}}>{name.charAt(0).toUpperCase() + name.slice(1)}</h4> */}
-                        <p style={{justifyContent:'start',display:'flex',marginTop:'10px',marginBottom:'10px'}}>
+                      
+                        
+                        <p style={{ justifyContent: 'start', display: 'flex', marginTop: '10px', marginBottom: '10px' }}>
+                        <FaUserAlt style={{ marginRight: '8px' }} />
+                        {name}
+                        </p>
+                        <p style={{ justifyContent: 'start', display: 'flex', marginTop: '10px', marginBottom: '10px' }}>
+                          <i className='fa fa-envelope'></i> {email}
+                        </p>
+                        <p style={{ justifyContent: 'start', display: 'flex', marginTop: '10px', marginBottom: '10px' }}>
                           <i className='fa fa-location-dot'></i> {location}
                         </p>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px',color:'#7280AA' }}>
+                         Ratings: {[...Array(5)].map((_, i) => (
+                            <FaStar key={i} color={i < rating ? "#ffd700" : "#e4e5e9"} style={{ marginRight: '2px' }} />
+                          ))}
+                        </div>
                       </div>
-                      <div className='button flex'>
+                      
+                      <div className='button flex '>
                         <div>
                           <button className='btn1'>${amount}</button>
                         </div>

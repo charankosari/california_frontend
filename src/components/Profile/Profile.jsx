@@ -60,6 +60,7 @@ const Profile = ({ login }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [loadingSave, setLoadingSave] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
   const url = "http://localhost:9999";
 
@@ -99,6 +100,8 @@ const Profile = ({ login }) => {
   };
 
   const handleSave = async () => {
+    setLoadingSave(true); // Set loading state to true
+
     try {
       const jwtToken = localStorage.getItem("jwtToken");
 
@@ -115,28 +118,45 @@ const Profile = ({ login }) => {
       if (editData.number !== userData.number) {
         updatedData.number = editData.number;
       }
-      if (
-        editData.address !== userData.address ||
-        editData.pincode !== userData.pincode
-      ) {
+      if (userData.addresses.length > 0) {
+        const latestAddress = userData.addresses[userData.addresses.length - 1];
+        if (
+          editData.address !== latestAddress?.address ||
+          editData.pincode !== latestAddress?.pincode
+        ) {
+          updatedData.address = {
+            address: editData.address,
+            pincode: editData.pincode,
+          };
+        }
+      } else if (editData.address || editData.pincode) {
+        // Handle case where no addresses exist yet
         updatedData.address = {
           address: editData.address,
           pincode: editData.pincode,
         };
       }
 
-      // Make the PUT request with updatedData
       await axios.put(`${url}/api/c3/user/me/profileupdate`, updatedData, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
       });
 
-      // Update local state with edited data
-      setUserData({ ...userData, ...updatedData });
+      // Fetch the updated user data
+      const response = await axios.get(`${url}/api/c3/user/me`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      setUserData(response.data.user);
+      setEditData(response.data.user);
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating user data:", error);
+    } finally {
+      setLoadingSave(false); // Set loading state to false
     }
   };
 
@@ -146,11 +166,8 @@ const Profile = ({ login }) => {
   };
 
   const handleSignout = () => {
-    // Clear JWT token from localStorage
     localStorage.removeItem("jwtToken");
-    // Redirect or perform any additional cleanup
-    // For example, redirect to login page
-    window.location.href = "/login"; // Replace with your login route
+    window.location.href = "/login";
   };
 
   if (loading) {
@@ -245,31 +262,50 @@ const Profile = ({ login }) => {
                       name="address"
                       label="Address"
                       variant="outlined"
-                      value={editData.addresses[0].address}
+                      value={
+                        editData.address || userData.addresses[0]?.address || ""
+                      }
                       onChange={handleChange}
                       fullWidth
                       margin="normal"
                     />
                     <TextField
                       name="pincode"
-                      label="Pincode"
+                      label="Zipcode"
                       variant="outlined"
-                      value={editData.addresses[0].pincode}
+                      value={
+                        editData.pincode || userData.addresses[0]?.pincode || ""
+                      }
                       onChange={handleChange}
                       fullWidth
                       margin="normal"
                     />
                   </>
                 ) : (
-                  <Typography variant="body1">
-                    <strong>Address:</strong> {userData.addresses[0].address}
-                    <br />
-                    <strong>Pincode:</strong> {userData.addresses[0].pincode}
-                  </Typography>
+                  <>
+                    {userData.addresses.length > 0 ? (
+                      <div>
+                        <Typography variant="body1">
+                          <strong>Address:</strong>{" "}
+                          {userData.addresses[userData.addresses.length - 1]
+                            ?.address || "not provided"}
+                        </Typography>
+                        <Typography variant="body1">
+                          <strong>Zipcode:</strong>{" "}
+                          {userData.addresses[userData.addresses.length - 1]
+                            ?.pincode || "not provided"}
+                        </Typography>
+                      </div>
+                    ) : (
+                      <Typography variant="body1">
+                        <strong>Address:</strong> not provided
+                      </Typography>
+                    )}
+                  </>
                 )}
               </Grid>
             </Grid>
-            {isEditing && ( 
+            {isEditing && (
               <div
                 style={{
                   marginTop: "20px",
@@ -282,7 +318,7 @@ const Profile = ({ login }) => {
                   color="primary"
                   onClick={handleSave}
                 >
-                  Save
+                  {loadingSave ? <ClipLoader size={24} color="#fff" /> : "Save"}
                 </Button>
                 <Button
                   variant="outlined"

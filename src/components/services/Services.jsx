@@ -5,6 +5,7 @@ import "../home/featured/Featured.css"
 import FeaturedCard from "../home/featured/FeaturedCard"
 import Header from "../common/header/Header"
 import Footer from "../common/footer/Footer"
+import Recent from "../home/recent/Recent"
 
 const Services = () => {
   return (
@@ -16,6 +17,8 @@ const Services = () => {
           <FeaturedCard />
         </div>
       </section>
+      <Recent/>
+
       <Footer/>
     </>
   )
