@@ -24,7 +24,7 @@ const Chat = ({ onClose }) => {
 
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputMessage('');
-    const url='http://localhost:9999'
+    const url='https://oneapp.trivedagroup.com'
 
     try {
       const apiUrl = messages.length === 0

@@ -18,7 +18,7 @@ const FeaturedCard = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get('http://localhost:9999/api/c3/ser/allservice');
+        const response = await axios.get('https://oneapp.trivedagroup.com/api/c3/ser/allservice');
         const fetchedServices = response.data.services;
         setServices(fetchedServices);
 

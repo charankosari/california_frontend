@@ -20,7 +20,7 @@ const Bookings = () => {
         const config = {
           headers: { Authorization: `Bearer ${token}` }
         };
-        const response = await axios.get('http://localhost:9999/api/c3/user/getbooking', config);
+        const response = await axios.get('https://oneapp.trivedagroup.com/api/c3/user/getbooking', config);
         setBookings(response.data.bookings);
       } catch (error) {
         console.error('Error fetching bookings:', error);

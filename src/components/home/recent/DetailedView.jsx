@@ -16,19 +16,21 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
+  TextField,
+  Rating,
 } from "@mui/material";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import axios from "axios";
-import Carousel from "react-material-ui-carousel"; // MUI Carousel
+import Carousel from "react-material-ui-carousel";
 import Header from "../../common/header/Header";
 import Footer from "../../common/footer/Footer";
 import "./DetailedView.css";
 
 const DetailedView = () => {
   const history = useHistory();
-  const { id } = useParams(); // Get the ID from URL params
-  const [userData, setUserData] = useState(null); // State to store user data
-  const [service, setService] = useState(null); // State to store service data
+  const { id } = useParams();
+  const [userData, setUserData] = useState(null);
+  const [service, setService] = useState(null);
   const [isFavorited, setIsFavorited] = useState(false);
   const [bookingSlots, setBookingSlots] = useState({});
   const [availableDates, setAvailableDates] = useState([]);
@@ -38,17 +40,21 @@ const DetailedView = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState("success");
 
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const fetchServiceData = async () => {
+    try {
+      const response = await axios.get(
+        `https://oneapp.trivedagroup.com/api/c3/user/getservice/${id}`
+      );
+      setService(response.data.data);
+    } catch (error) {
+      console.error("Error fetching service data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchServiceData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:9999/api/c3/user/getservice/${id}`
-        );
-        setService(response.data.data);
-      } catch (error) {
-        console.error("Error fetching service data:", error);
-      }
-    };
+  
 
     fetchServiceData();
   }, [id]);
@@ -59,7 +65,7 @@ const DetailedView = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:9999/api/c3/user/me",
+          "https://oneapp.trivedagroup.com/api/c3/user/me",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
@@ -121,7 +127,7 @@ const DetailedView = () => {
     setLoading(true);
     try {
       await axios.post(
-        `http://localhost:9999/api/c3/user/me/wishlist/${service._id}`,
+        `https://oneapp.trivedagroup.com/api/c3/user/me/wishlist/${service._id}`,
         null,
         {
           headers: {
@@ -166,6 +172,44 @@ const DetailedView = () => {
   const handleAlertClose = () => {
     setAlertOpen(false);
   };
+
+  const handleReviewOpen = () => {
+    setReviewOpen(true);
+  };
+
+  const handleReviewClose = () => {
+    setReviewOpen(false);
+  };
+
+    const handleSubmitReview = async () => {
+      setLoading(true);
+      try {
+        await axios.post(
+          "https://oneapp.trivedagroup.com/api/c3/user/createreview",
+          {
+            rating,
+            comment,
+            serviceId: service._id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+            },
+          }
+        );
+        setAlertMessage("Review submitted successfully");
+        setAlertSeverity("success");
+        fetchServiceData();
+        setReviewOpen(false);
+      } catch (error) {
+        console.error("Error submitting review:", error);
+        setAlertMessage("Failed to submit review");
+        setAlertSeverity("error");
+      } finally {
+        setLoading(false);
+        setAlertOpen(true);
+      }
+    };
 
   if (!service) {
     return (
@@ -229,9 +273,7 @@ const DetailedView = () => {
                 {service.description}
               </Typography>
               <Divider style={{ margin: "20px 0" }} />
-              <Typography variant="body2" color="textSecondary">
-                <strong>Email:</strong> {service.email}
-              </Typography>
+             
               <Typography variant="body2" color="textSecondary">
                 <strong>Phone:</strong> {service.number}
               </Typography>
@@ -241,6 +283,105 @@ const DetailedView = () => {
                   <span key={index}>{`${addr.address}, ${addr.pincode}`}</span>
                 ))}
               </Typography>
+              <Box
+  style={{
+    marginTop: "40px",
+    padding: "20px",
+    borderRadius: "12px",
+    backgroundColor: "#f5f5f5",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+  }}
+>
+  <Typography
+    variant="h4"
+    style={{
+      fontWeight: "bold",
+      marginBottom: "20px",
+      color: "#333",
+      textAlign: "center",
+    }}
+  >
+    User Reviews
+  </Typography>
+  <Box style={{ maxHeight: "400px", overflowY: "auto" }}>
+    {service.reviews.length > 0 ? (
+      service.reviews.map((review, index) => (
+        <Box
+          key={index}
+          style={{
+            backgroundColor: "#fff",
+            marginBottom: "15px",
+            padding: "15px",
+            borderRadius: "8px",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+            transition: "box-shadow 0.3s ease-in-out",
+            "&:hover": {
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            },
+          }}
+        >
+          <Box display="flex" alignItems="center" marginBottom="10px">
+            <Box
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor: "#4A90E2",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                marginRight: "10px",
+                fontSize: "18px",
+                fontWeight: "bold",
+              }}
+            >
+              {review.username.charAt(0)}
+            </Box>
+            <Typography variant="h6" style={{ color: "#333", fontWeight: "500" }}>
+              {review.username}
+            </Typography>
+          </Box>
+          <Box marginBottom="10px">
+            <Rating value={review.rating} readOnly size="medium" />
+          </Box>
+          <Typography
+            variant="body1"
+            style={{
+              color: "#555",
+              lineHeight: "1.6",
+            }}
+          >
+            {review.comment}
+          </Typography>
+        </Box>
+      ))
+    ) : (
+      <Typography variant="body1" style={{ textAlign: "center", color: "#999" }}>
+        No reviews yet. Be the first to leave a review!
+      </Typography>
+    )}
+  </Box>
+  <Button
+    variant="contained"
+    color="primary"
+    style={{
+      marginTop: "20px",
+      display: "block",
+      width: "100%",
+      padding: "10px",
+      backgroundColor: "#4A90E2",
+      color: "#fff",
+      fontWeight: "bold",
+      borderRadius: "8px",
+      textTransform: "none",
+    }}
+    onClick={handleReviewOpen}
+  >
+    Leave a Review
+  </Button>
+</Box>
+
               <Typography
                 variant="body2"
                 color="textSecondary"
@@ -273,51 +414,66 @@ const DetailedView = () => {
                         borderRadius: "8px",
                       }}
                     >
-                      <Typography variant="h6">{date}</Typography>
-                      <Typography
-                        variant="body2"
-                        color={
-                          availableSlots > 0 ? "textPrimary" : "textSecondary"
-                        }
-                      >
-                        {availableSlots > 0
-                          ? `${availableSlots} slots remaining`
-                          : "No slots available"}
+                      <Typography variant="body1">
+                        {new Date(date).toLocaleDateString()}
                       </Typography>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          marginTop: "20px",
-                        }}
+                      <Typography variant="body2" color="textSecondary">
+                        {availableSlots} slots available
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ marginTop: "10px" }}
+                        onClick={() => handleBookNow(date)}
                       >
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handleBookNow(date)}
-                        >
-                          Book Now
-                        </Button>
-                      </div>
+                        Book Now
+                      </Button>
                     </Box>
                   );
                 })}
               </Carousel>
+              <Divider style={{ margin: "20px 0" }} />
+          
+
+             
             </Box>
           </CardContent>
         </Card>
       </Container>
+      <Footer />
 
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Payment Options</DialogTitle>
+      {/* Review Modal */}
+      <Dialog open={reviewOpen} onClose={handleReviewClose}>
+        <DialogTitle>Write a Review</DialogTitle>
         <DialogContent>
-          <section className="add-card page">
-            <stripe-buy-button
-              buy-button-id="buy_btn_1Pe9hNJskBab91Snge0Jtuq6"
-              publishable-key="pk_test_51Pe9aMJskBab91SnmTlz9dpWAZK8aOevsmj8eeZ5hj3GxI10GFbNlYtRA8chHi2sBorFGqBtOLEVurBAMFE0ePAj00P2npoi4F"
-            ></stripe-buy-button>
-          </section>
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Rating
+              name="user-rating"
+              value={rating}
+              onChange={(event, newValue) => {
+                setRating(newValue);
+              }}
+            />
+            <TextField
+              label="Comment"
+              multiline
+              rows={4}
+              variant="outlined"
+              fullWidth
+              style={{ marginTop: "20px" }}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "20px" }}
+              onClick={handleSubmitReview}
+              disabled={loading || rating === 0 || !comment}
+            >
+              {loading ? <CircularProgress size={24} /> : "Submit Review"}
+            </Button>
+          </Box>
         </DialogContent>
       </Dialog>
 
@@ -330,8 +486,6 @@ const DetailedView = () => {
           {alertMessage}
         </Alert>
       </Snackbar>
-
-      <Footer />
     </>
   );
 };

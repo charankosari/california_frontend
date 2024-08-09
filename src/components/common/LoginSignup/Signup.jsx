@@ -49,7 +49,7 @@ const Signup = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:9999/api/c3/user/register', formData);
+      const response = await axios.post('https://oneapp.trivedagroup.com/api/c3/user/register', formData);
       const { jwtToken } = response.data;
       localStorage.setItem('jwttoken', jwtToken);
       setIsLoading(false);

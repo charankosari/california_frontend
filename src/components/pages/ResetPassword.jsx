@@ -45,7 +45,7 @@ const ResetPasswordForm = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:9999/api/c3/user/resetpassword/${id}`, {
+      const response = await axios.post(`https://oneapp.trivedagroup.com/api/c3/user/resetpassword/${id}`, {
         password: formData.password,
         confirmPassword: formData.confirmPassword
       });

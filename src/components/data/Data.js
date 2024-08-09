@@ -12,10 +12,10 @@ export const nav = [
     path: "/services",
   },
 
-  {
-    text: "contact",
-    path: "/contact",
-  },
+  // {
+  //   text: "contact",
+  //   path: "/contact",
+  // },
 ]
 export const featured = [
   {

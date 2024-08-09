@@ -33,7 +33,7 @@ const PaymentPage = () => {
 
   const handleCheckout = async () => {
     try {
-        const response = await axios.post('http://localhost:9999/api/c3/user/addbooking', {
+        const response = await axios.post('https://oneapp.trivedagroup.com/api/c3/user/addbooking', {
             name: 'John Doe',
             phoneNumber: '9876543210',
             email: 'johndoe@example.com',

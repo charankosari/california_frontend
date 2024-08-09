@@ -30,7 +30,7 @@ const Login = ({ handleLogin }) => {
   const [error, setError] = useState('');
   const [openModal, setOpenModal] = useState(false); // State for modal visibility
   const [emailForReset, setEmailForReset] = useState(''); // State for email input in modal
-  const url = "http://localhost:9999";
+  const url = "https://oneapp.trivedagroup.com";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

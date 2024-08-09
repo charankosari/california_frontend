@@ -17,7 +17,7 @@ import Header from "../common/header/Header";
 import { styled } from "@mui/system";
 import { Avatar as ReactAvatar } from "react-avatar";
 import { ClipLoader } from "react-spinners";
-
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 const ProfileContainer = styled(Container)({
   marginTop: "20px",
   display: "flex",
@@ -62,14 +62,18 @@ const Profile = ({ login }) => {
   const [loading, setLoading] = useState(true);
   const [loadingSave, setLoadingSave] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
-  const url = "http://localhost:9999";
+  const url = "https://oneapp.trivedagroup.com";
+  const history = useHistory();
+
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const jwtToken = localStorage.getItem("jwtToken");
         if (!jwtToken) {
-          throw new Error("JWT token not found in localStorage");
+          localStorage.removeItem('jwtToken')
+          alert('no jwt token provided')
+          history.push('/')
         }
 
         const response = await axios.get(`${url}/api/c3/user/me`, {
@@ -84,6 +88,9 @@ const Profile = ({ login }) => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        localStorage.removeItem('jwtToken')
+        alert('session expired, please login')
+        history.push('/')
         setLoading(false);
       }
     };
@@ -130,7 +137,6 @@ const Profile = ({ login }) => {
           };
         }
       } else if (editData.address || editData.pincode) {
-        // Handle case where no addresses exist yet
         updatedData.address = {
           address: editData.address,
           pincode: editData.pincode,

@@ -28,7 +28,7 @@ const FavouritesPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         };
         const response = await axios.get(
-          "http://localhost:9999/api/c3/user/me/wishlist",
+          "https://oneapp.trivedagroup.com/api/c3/user/me/wishlist",
           config
         );
         setFavourites(response.data.data);
