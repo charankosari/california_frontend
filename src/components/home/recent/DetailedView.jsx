@@ -19,6 +19,7 @@ import {
   TextField,
   Rating,
 } from "@mui/material";
+import moment from "moment";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import axios from "axios";
 import Carousel from "react-material-ui-carousel";
@@ -85,8 +86,29 @@ const DetailedView = () => {
 
     const fetchBookingSlots = async () => {
       const slotsData = service.bookingIds || {};
-      setBookingSlots(slotsData);
-      setAvailableDates(Object.keys(slotsData));
+    
+      // Get the current date and time using moment
+      const currentDate = moment();
+      const currentTime = currentDate.hour();
+    
+      // Filter the slotsData to remove past dates and the current date if the time crosses 12 PM
+      const filteredSlotsData = Object.keys(slotsData).reduce((acc, date) => {
+        const slotDate = moment(date);
+    
+        // Compare slotDate with currentDate
+        if (
+          slotDate.isAfter(currentDate, 'day') || 
+          (slotDate.isSame(currentDate, 'day') && currentTime < 12)
+        ) {
+          acc[date] = slotsData[date]; // Add to the accumulator if the date is valid
+        }
+    
+        return acc;
+      }, {});
+    
+      // Update the state with filtered slots and available dates
+      setBookingSlots(filteredSlotsData);
+      setAvailableDates(Object.keys(filteredSlotsData));
     };
 
     fetchBookingSlots();
@@ -283,7 +305,67 @@ const DetailedView = () => {
                   <span key={index}>{`${addr.address}, ${addr.pincode}`}</span>
                 ))}
               </Typography>
-              <Box
+
+
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                style={{ marginTop: "20px" }}
+              >
+                <strong>Available Times:</strong> 9 AM to 4 PM
+              </Typography>
+              <Divider style={{ margin: "20px 0" }} />
+              <Typography variant="h6" style={{ marginBottom: "10px" }}>
+                <strong>Available Dates</strong>
+              </Typography>
+              <Carousel
+                navButtonsAlwaysVisible
+                indicators={false}
+                autoPlay={false}
+                style={{ marginTop: "20px" }}
+              >
+                {availableDates.map((date) => {
+                  const slots = bookingSlots[date];
+                  const availableSlots = Object.values(slots).filter(
+                    (slot) => slot.id === null
+                  ).length;
+                  return (
+                    <Box
+                      key={date}
+                      style={{
+                        padding: "20px",
+                        textAlign: "center",
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <Typography variant="body1">
+                        {new Date(date).toLocaleDateString()}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {availableSlots} slots available
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ marginTop: "10px" }}
+                        onClick={() => handleBookNow(date)}
+                      >
+                        Book Now
+                      </Button>
+                    </Box>
+                  );
+                })}
+              </Carousel>
+              <Divider style={{ margin: "20px 0" }} />
+          
+
+             
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Box
   style={{
     marginTop: "40px",
     padding: "20px",
@@ -381,65 +463,13 @@ const DetailedView = () => {
     Leave a Review
   </Button>
 </Box>
-
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                style={{ marginTop: "20px" }}
-              >
-                <strong>Available Times:</strong> 9 AM to 4 PM
-              </Typography>
-              <Divider style={{ margin: "20px 0" }} />
-              <Typography variant="h6" style={{ marginBottom: "10px" }}>
-                <strong>Available Dates</strong>
-              </Typography>
-              <Carousel
-                navButtonsAlwaysVisible
-                indicators={false}
-                autoPlay={false}
-                style={{ marginTop: "20px" }}
-              >
-                {availableDates.map((date) => {
-                  const slots = bookingSlots[date];
-                  const availableSlots = Object.values(slots).filter(
-                    (slot) => slot.id === null
-                  ).length;
-                  return (
-                    <Box
-                      key={date}
-                      style={{
-                        padding: "20px",
-                        textAlign: "center",
-                        border: "1px solid #ddd",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      <Typography variant="body1">
-                        {new Date(date).toLocaleDateString()}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {availableSlots} slots available
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        style={{ marginTop: "10px" }}
-                        onClick={() => handleBookNow(date)}
-                      >
-                        Book Now
-                      </Button>
-                    </Box>
-                  );
-                })}
-              </Carousel>
-              <Divider style={{ margin: "20px 0" }} />
-          
-
-             
-            </Box>
-          </CardContent>
-        </Card>
       </Container>
+
+
+
+
+
+
       <Footer />
 
       {/* Review Modal */}
@@ -476,7 +506,17 @@ const DetailedView = () => {
           </Box>
         </DialogContent>
       </Dialog>
-
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Payment Options</DialogTitle>
+        <DialogContent>
+          <section className="add-card page">
+            <stripe-buy-button
+              buy-button-id="buy_btn_1Pe9hNJskBab91Snge0Jtuq6"
+              publishable-key="pk_test_51Pe9aMJskBab91SnmTlz9dpWAZK8aOevsmj8eeZ5hj3GxI10GFbNlYtRA8chHi2sBorFGqBtOLEVurBAMFE0ePAj00P2npoi4F"
+            ></stripe-buy-button>
+          </section>
+        </DialogContent>
+      </Dialog>
       <Snackbar
         open={alertOpen}
         autoHideDuration={6000}

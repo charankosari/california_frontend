@@ -34,7 +34,7 @@ const BookingConfirmation = () => {
 
       try {
         const response = await axios.post(
-          'http://localhost:9999/api/c3/user/addbooking',
+          'https://oneapp.trivedagroup.com/api/c3/user/addbooking',
           bookingData,
           {
             headers: {
