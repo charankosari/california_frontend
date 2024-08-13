@@ -92,7 +92,7 @@ const Chat = ({ onClose }) => {
               {message.text}
             </div>
           ))}
-          {typing && <TypingAnimation />} {/* Render typing animation when typing is true */}
+          {typing && <TypingAnimation />} 
         </div>
         <div className="chat-input-form">
           <input

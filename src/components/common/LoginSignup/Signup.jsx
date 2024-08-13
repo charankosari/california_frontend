@@ -6,6 +6,7 @@ import { ClipLoader } from 'react-spinners';
 
 const Signup = () => {
   const navigate = useHistory();
+  const [cp,SetCp]=useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,7 +26,7 @@ const Signup = () => {
     const { name, value } = e.target;
     if (name === 'address' || name === 'pincode') {
       const updatedAddresses = formData.addresses.map((addr, index) => {
-        if (index === 0) { // Assuming only one address for simplicity, modify as needed
+        if (index === 0) { 
           return {
             ...addr,
             [name]: value,
@@ -48,6 +49,11 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    if(cp!== formData.password){
+      alert("Password and confirm password does'nt match");
+      setIsLoading(false);
+      return;
+    }
     try {
       const response = await axios.post('https://oneapp.trivedagroup.com/api/c3/user/register', formData);
       const { jwtToken } = response.data;
@@ -113,6 +119,14 @@ const Signup = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="confirmPassword"
+            value={cp}
+            onChange={(e)=>{SetCp(e.target.value);console.log(e.target.value)}}
             required
           />
           <button type="submit" disabled={isLoading}>
