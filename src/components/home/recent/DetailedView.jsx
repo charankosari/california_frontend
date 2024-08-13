@@ -62,7 +62,11 @@ const DetailedView = () => {
 
   useEffect(() => {
     if (!service) return;
-
+if(localStorage.getItem('jwtToken')===null){
+  alert('please login to book a service');
+  history.push('/login')
+  return;
+};
     const fetchUserData = async () => {
       try {
         const response = await axios.get(

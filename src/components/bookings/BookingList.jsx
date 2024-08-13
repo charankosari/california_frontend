@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Container, Typography, Card, CardContent, Box, Grid, CircularProgress, Avatar } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import DoneIcon from '@mui/icons-material/Done';
 import UpcomingIcon from '@mui/icons-material/Schedule';
 import TodayIcon from '@mui/icons-material/Today';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
 import axios from 'axios';
 import moment from 'moment';
 import Footer from '../common/footer/Footer';
 import Header from '../common/header/Header';
+import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 const Bookings = () => {
+  const history=useHistory();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem('jwtToken');
-
+  const alertShown = useRef(false); 
   useEffect(() => {
+    if (!token) {
+      if (!alertShown.current) { 
+        alert('Please log in to access your bookings.');
+        alertShown.current = true; 
+      }
+      history.push('/login'); 
+      return;
+    }
     const fetchBookings = async () => {
       try {
         const config = {
@@ -105,9 +116,14 @@ const Bookings = () => {
           <CircularProgress />
         </Box>
       ) : noBookingsFound ? (
-        <Box display="flex" justifyContent="center" mt={4}>
-          <Typography variant="h6">No Bookings Found</Typography>
-        </Box>
+     
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" mt={4} sx={{ minHeight: '40vh' }}>
+  <EventBusyIcon sx={{ fontSize: 60, color: '#ccc' }} />
+  <Typography variant="h6" mt={2}>
+    No Bookings Found
+  </Typography>
+</Box>
+
       ) : (
         <>
           {categorizedBookings.today.length > 0 &&

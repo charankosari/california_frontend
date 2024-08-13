@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Container,
   Typography,
@@ -14,14 +14,22 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import Footer from "../common/footer/Footer";
 import Header from "../common/header/Header";
-
 const FavouritesPage = () => {
   const [favourites, setFavourites] = useState([]);
   const [loading, setLoading] = useState(true);
   const history = useHistory();
   const token = localStorage.getItem("jwtToken");
-
+const alertShown=useRef(false)
   useEffect(() => {
+    if (!token) {
+      if (!alertShown.current) { 
+        alert('Please log in to access your bookings.');
+        alertShown.current = true; 
+      }
+      history.push('/login'); 
+      return;
+    }
+
     const fetchFavourites = async () => {
       try {
         const config = {

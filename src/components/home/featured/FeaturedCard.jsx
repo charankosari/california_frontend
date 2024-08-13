@@ -7,57 +7,80 @@ import YardIcon from '@mui/icons-material/Yard';
 import { TbAirConditioning } from "react-icons/tb";
 import axios from 'axios';
 import moment from 'moment';
-
+import AOS from "aos";
+import "aos/dist/aos.css";
 const normalizeString = (str) => {
-  return str.toLowerCase().replace(/[\s\-]+/g, ''); // Convert to lowercase and remove spaces and dashes
+  return str.toLowerCase().replace(/[\s\-]+/g, '');
 };
 
 const filterValidServices = (services) => {
-  const currentDate = moment();
-  const currentTime = currentDate.hour();
+  const currentDate = moment().startOf('day');
+  const currentTime = moment();
 
-  return services.filter(service => {
+  return services.map(service => {
     const slotsData = service.bookingIds || {};
-    const validDates = Object.keys(slotsData).filter(date => {
+    let hasValidBooking = false;
+
+    Object.keys(slotsData).forEach(date => {
       const slotDate = moment(date);
-      return slotDate.isAfter(currentDate, 'day') || 
-             (slotDate.isSame(currentDate, 'day') && currentTime < 12);
+
+      if (slotDate.isSameOrAfter(currentDate)) {
+        const validTimes = Object.keys(slotsData[date]).filter(timeSlot => {
+          const slotTime = moment(date).startOf('day').add(timeSlot, 'hours');
+          return slotDate.isAfter(currentDate) || slotTime.isAfter(currentTime);
+        });
+
+        if (validTimes.length > 0) {
+          hasValidBooking = true;  // Mark this service as having a valid booking
+        }
+      }
     });
 
-    return validDates.length > 0; // Keep the service if it has any valid dates
+    return {
+      ...service,
+      hasValidBooking,
+    };
   });
 };
 
+
+
 const FeaturedCard = () => {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: false, 
+    });
+  }, []);
   const [services, setServices] = useState([]);
   const [serviceCounts, setServiceCounts] = useState({});
-
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const response = await axios.get('https://oneapp.trivedagroup.com/api/c3/ser/allservice');
         let fetchedServices = response.data.services;
-        
-        // Filter services based on valid booking dates
         fetchedServices = filterValidServices(fetchedServices);
-
         setServices(fetchedServices);
-
-        // Normalize and count services
+  
         const counts = fetchedServices.reduce((acc, service) => {
-          const normalizedService = normalizeString(service.service);
-          acc[normalizedService] = (acc[normalizedService] || 0) + 1;
+          if (service.hasValidBooking) {
+            const normalizedService = normalizeString(service.service);
+            acc[normalizedService] = (acc[normalizedService] || 0) + 1;  // Increment count by 1 for this service type
+          }
           return acc;
         }, {});
-
+  
         setServiceCounts(counts);
       } catch (error) {
         console.error("Error fetching services:", error);
       }
     };
-
+  
     fetchServices();
   }, []);
+  
+  
+  
 
   const serviceDetails = [
     {
@@ -88,14 +111,23 @@ const FeaturedCard = () => {
   ];
 
   return (
-    <div className='content grid5 mtop'>
-      {serviceDetails.map((item, index) => (
-        <a href={`#${item.target}`} key={index} className='box'>
-          {item.icon}
-          <h4>{item.name}</h4>
-          <label>{serviceCounts[normalizeString(item.name)] || "0 Services"}</label>
-        </a>
-      ))}
+    <div className='content grid5 mtop' >
+   {serviceDetails.map((item, index) => (
+  <a 
+    href={`#${item.target}`} 
+    key={index} 
+    className='box' 
+    data-aos='fade-up' 
+    data-aos-easing="ease-out-sine"
+    data-aos-duration="1000"
+    data-aos-delay={`${index * 200}`} 
+  >
+    {item.icon}
+    <h4>{item.name}</h4>
+    <label>{serviceCounts[normalizeString(item.name)] || "0 Services"}</label>
+  </a>
+))}
+
     </div>
   );
 };

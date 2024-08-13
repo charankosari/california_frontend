@@ -1,16 +1,24 @@
-import React from "react";
+import React,{useEffect} from "react";
 import Back from "../common/Back";
 import Heading from "../common/Heading";
 import img from "../images/about.jpg";
 import "./about.css";
 import Header from "../common/header/Header";
 import Footer from "../common/footer/Footer";
-
+import AOS from "aos";
+import "aos/dist/aos.css";
 const About = () => {
+  useEffect(()=>{
+AOS.init({
+  duration:1000,
+  once:false
+})
+  },[])
+
   return (
     <>
       <Header />
-      <section className='about'>
+      <section className='about' data-aos='fade-up' data-aos-duration='1000'>
         <Back name='About Us' title='About Us - Who We Are?' cover={img} />
         <div className='container flex mtop'>
           <div className='left row'>
