@@ -296,12 +296,7 @@ if(localStorage.getItem('jwtToken')===null){
               <Typography variant="body2" color="textSecondary">
                 <strong>Name:</strong> {service.name}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                <strong>Address:</strong>{" "}
-                {service.addresses.map((addr, index) => (
-                  <span key={index}>{`${addr.address}, ${addr.pincode}`}</span>
-                ))}
-              </Typography>
+           
 
 
               <Typography
