@@ -13,8 +13,20 @@ export const nav = [
   },
 
   // {
-  //   text: "contact",
-  //   path: "/contact",
+  //   text: "Login",
+  //   path: "/login",
+  // },
+  // {
+  //   text: "Bookings",
+  //   path: "/bookings",
+  // },
+  // {
+  //   text: "Favoruites",
+  //   path: "/fav",
+  // },
+  // {
+  //   text: "Profile",
+  //   path: "/profile",
   // },
 ]
 export const featured = [

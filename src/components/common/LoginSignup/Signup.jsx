@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './Log.css';
 import { ClipLoader } from 'react-spinners';
-
+import { Typography } from '@mui/material';
 const Signup = () => {
   const navigate = useHistory();
   const [cp,SetCp]=useState('');
@@ -68,7 +68,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container" style={{display:'flex',flexDirection:'column'}}>
       <div className="auth-card">
         <h2>Signup</h2>
         {error && <p className="error-message">{error}</p>}

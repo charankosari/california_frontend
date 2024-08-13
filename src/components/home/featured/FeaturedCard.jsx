@@ -65,7 +65,7 @@ const FeaturedCard = () => {
         const counts = fetchedServices.reduce((acc, service) => {
           if (service.hasValidBooking) {
             const normalizedService = normalizeString(service.service);
-            acc[normalizedService] = (acc[normalizedService] || 0) + 1;  // Increment count by 1 for this service type
+            acc[normalizedService] = (acc[normalizedService] || 0) + 1;  
           }
           return acc;
         }, {});
@@ -86,7 +86,7 @@ const FeaturedCard = () => {
     {
       icon: <TbAirConditioning style={{ fontSize: 60, color: 'blue' }} />,
       name: "Air Conditioner Repair",
-      target: "air-conditioner-repair" // This should be in the normalized form as well
+      target: "air-conditioner-repair" 
     },
     {
       icon: <PlumbingIcon style={{ fontSize: 60, color: 'orange' }} />,

@@ -74,7 +74,8 @@ const Login = ({ handleLogin }) => {
   };
 
   return (
-    <AuthContainer>
+    <AuthContainer sx={{display:'flex',flexDirection:'column'}}>
+        <Typography variant="h5" sx={{marginBottom:'10px',fontWeight:'bold'}}>One App</Typography>
       <AuthCard elevation={3}>
         <Typography variant="h5" component="h2" gutterBottom>
           Login

@@ -37,11 +37,11 @@ header .toggle {
 @media screen and (max-width: 768px) {
   header {
     padding: 0;
-    height: 15vh;
+    height: 12vh;
 
   }
   header img {
-    margin-top: 30px;
+    margin-top: 20px;
   }
   header .button {
     display: none;
@@ -51,7 +51,7 @@ header .toggle {
   }
   header .toggle {
     display: block;
-    margin-top: 20px;
+    margin-top: 10px;
   }
   header .small {
     position: absolute;

@@ -3,41 +3,53 @@ import "./header.css";
 import { nav } from "../../data/Data";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { useMediaQuery } from 'react-responsive';
 import logo from '../../images/logo.png';
-import AOS from "aos";
-import "aos/dist/aos.css";
 const Header = () => {
   const history = useHistory();
   const [navList, setNavList] = useState(false);
   const isLoggedIn = localStorage.getItem('jwtToken');
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-    });
-  }, []);
+  const isMobile = useMediaQuery({ query: '(max-width: 767px)' });
   return (
     <>
-      <header>
-        <div className='container flex' data-aos="fade-down" data-aos-easing="ease-out-sine"
-          data-aos-duration="1000">
+      <header  >
+        <div className='container flex' >
           <Link to='/'>
             <div className='logo'>
-              <img src={logo} alt='' data-aos="fade-up" data-aos-easing="ease-out-sine"
-                data-aos-duration="1000" />
+              <img src={logo} alt=''  />
             </div>
           </Link>
           <div className='nav'>
-            <ul className={navList ? "small" : "flex"} data-aos="fade-up" data-aos-easing="ease-out-sine"
-              data-aos-duration="1000">
+            <ul className={navList ? "small" : "flex"}>
               {nav.map((list, index) => (
                 <li key={index}>
                   <Link to={list.path}>{list.text}</Link>
                 </li>
               ))}
+              {isLoggedIn && isMobile && (
+  <>
+    <ul>
+      <li>
+        <Link to='/bookings'>My Bookings</Link>
+      </li>
+      <li>
+        <Link to='/fav'>Favourites</Link>
+      </li>
+      <li>
+        <Link to='/profile'>Profile</Link>
+      </li>
+       
+    </ul>
+  </>
+)}
+ {!isLoggedIn && isMobile && (
+  <li>
+        <Link to='/login'>Login</Link>
+      </li>
+ )}
             </ul>
           </div>
-          <div className='button flex' data-aos="fade-up" data-aos-easing="ease-out-sine"
-            data-aos-duration="1000">
+          <div className='button flex'>
             <h4>
               <Link to='/bookings'>   My Bookings</Link>
             </h4>

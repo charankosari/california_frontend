@@ -91,11 +91,8 @@ if(localStorage.getItem('jwtToken')===null){
     const fetchBookingSlots = async () => {
       const slotsData = service.bookingIds || {};
     
-      // Get the current date and time using moment
       const currentDate = moment();
       const currentTime = currentDate.hour();
-    
-      // Filter the slotsData to remove past dates and the current date if the time crosses 12 PM
       const filteredSlotsData = Object.keys(slotsData).reduce((acc, date) => {
         const slotDate = moment(date);
     

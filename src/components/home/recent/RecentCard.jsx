@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { TextField, Typography } from "@mui/material";
+import { TextField, Typography, Snackbar, Alert } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
 import { useHistory } from "react-router-dom";
-import { FaStar} from "react-icons/fa";
-import { FaHeart,FaRegHeart } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import moment from "moment";
 import './recent.css';
 import AOS from "aos";
@@ -12,26 +13,36 @@ const RecentCard = () => {
 
   const [services, setServices] = useState([]);
   const [filteredServices, setFilteredServices] = useState([]);
-  const [wishList, setWishList] = useState([]);
+  const [wishList, setWishList] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const url = 'https://oneapp.trivedagroup.com';
   const history = useHistory();
+  const [ch, setCh] = useState('');
 
-useEffect( ()=>{
-  const fetchWishlist = async () => {
-    try {
-      const response = await axios.get(`${url}/api/c3/user/me`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
-      });
-      setWishList(response.data.user.wishList.map(item => item.service));
-    } catch (error) {
-      console.error("Error fetching wishlist:", error);
-    }
-  };
-  fetchWishlist();
-},[])
+
+
   useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const response = await axios.get(`${url}/api/c3/user/me`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('jwtToken')}` }
+        });
+        const wishlistItems = response.data.user.wishList.map(item => item.service);
+        const updatedWishList = { ...wishList };
+        wishlistItems.forEach(id => {
+          updatedWishList[id] = true;
+        });
+        setWishList(updatedWishList);
+        console.log(wishList)
+
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      }
+    };
     const fetchServices = async () => {
       try {
         const response = await axios.get(`${url}/api/c3/ser/allservice`);
@@ -67,6 +78,12 @@ useEffect( ()=>{
 
         setServices(filteredServices);
         setFilteredServices(filteredServices);
+        const wishListDict = {};
+        filteredServices.forEach(service => {
+          wishListDict[service._id] = false;
+        });
+        setWishList(wishListDict);
+        fetchWishlist();
       } catch (error) {
         console.error("Error fetching services:", error);
       }
@@ -75,12 +92,12 @@ useEffect( ()=>{
     fetchServices();
   }, []);
 
-      useEffect(() => {
-        AOS.init({
-          duration: 1000,
-          once: false, 
-        });
-      }, []);
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: false,
+    });
+  }, []);
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     filterServices(e.target.value);
@@ -116,7 +133,46 @@ useEffect( ()=>{
     sessionStorage.setItem('selectedService', JSON.stringify(service));
     history.push(`/details/${service._id}`);
   };
-
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+  };
+  const handleToggleFavorite = async (id) => {
+    setLoading(true);
+    if (localStorage.getItem('jwtToken') === null) {
+      alert('Please login to add to favorites');
+      history.push('/login');
+      setLoading(false);
+      return;
+    }
+    try {
+      const isFavorited = wishList[id] || false;
+      await axios.post(
+        `https://oneapp.trivedagroup.com/api/c3/user/me/wishlist/${id}`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+        }
+      );
+      setWishList(prevWishList => ({
+        ...prevWishList,
+        [id]: !isFavorited
+      }));
+      setAlertMessage(
+        isFavorited ? "Removed from favorites" : "Added to favorites"
+      );
+      setAlertSeverity("success");
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      setAlertMessage("An error occurred while updating favorites");
+      setAlertSeverity("error");
+    } finally {
+      setLoading(false);
+      setAlertOpen(true);
+    }
+  };
+  
   return (
     <div>
       <TextField
@@ -133,44 +189,60 @@ useEffect( ()=>{
         Object.keys(categorizedServices).map((serviceType, index) => (
           <div key={serviceType} style={{ marginBottom: '20px' }} data-aos='fade-up'>
             <h2 id={serviceType.toLowerCase().replace(/\s+/g, '-')}>{serviceType.charAt(0).toUpperCase() + serviceType.slice(1)}</h2>
-            <div className='content grid3 mtop'>
+            <div className='content grid3 ' style={{marginTop:'20px'}} >
               {categorizedServices[serviceType].map((service, index) => {
                 const { _id, image, service: serviceName, name, amount, overallRating, numReviews } = service;
                 const defaultImage = "https://via.placeholder.com/150";
-                const wish=wishList.includes(_id)
+                console.log(wishList)
                 return (
-                  <button key={index} style={{ textDecoration: 'none', border: 'none', backgroundColor: 'transparent' }} onClick={() => handleServiceClick(service)}>
-                    <div className="card">
+                  <div className="card">
+                    <button key={index} style={{ textDecoration: 'none', border: 'none', backgroundColor: 'transparent' }} onClick={() => handleServiceClick(service)}>
+
                       <div className="card-img"> <img src={image || defaultImage} alt={serviceName} /></div>
                       <div className="card-info">
-                        <p className="text-title" style={{color:'black'}}>{name}</p>
+                        <p className="text-title" style={{ color: 'black' }}>{name}</p>
                       </div>
-                      <div className="card-footer">
-                        <span className="text-title">${amount}</span>
-                        <div className="card-button">
-                        {wish ? (
-                            <FaHeart color="red" />
-                          ) : (
-                            <FaRegHeart color="gray" />
-                          )}
-                        </div>
-                        
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', color: '#7280AA',marginTop:'10px' }}>
-                          Ratings: 
-                          {[...Array(5)].map((_, i) => (
-                            <FaStar key={i} color={i < overallRating ? "#ffd700" : "#e4e5e9"} style={{ marginRight: '2px' }} size={10}/>
-                          ))}
-                          {overallRating === 0 ? <span style={{fontSize:'10px'}}>(no reviews yet)</span> : (`${numReviews} reviews`)}
-                        </div>  
+                    </button>
+
+                    <div className="card-footer">
+                      <span className="text-title">${amount}</span>
+                      <div className="card-button" onClick={() => handleToggleFavorite(_id)}>
+      {loading ? (
+        <CircularProgress size={24} />
+      ) : (
+        wishList[_id] ? (
+          <FaHeart color="red" />
+        ) : (
+          <FaRegHeart color="gray" />
+        )
+      )}
+    </div>
+
+
                     </div>
-                  </button>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', color: '#7280AA', marginTop: '10px' }}>
+                      Ratings:
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar key={i} color={i < overallRating ? "#ffd700" : "#e4e5e9"} style={{ marginRight: '2px' }} size={10} />
+                      ))}
+                      {overallRating === 0 ? <span style={{ fontSize: '10px' }}>(no reviews yet)</span> : (`${numReviews} reviews`)}
+                    </div>
+                  </div>
                 );
               })}
             </div>
           </div>
         ))
       )}
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={handleAlertClose}
+      >
+        <Alert onClose={handleAlertClose} severity={alertSeverity}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

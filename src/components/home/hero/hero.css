@@ -1,6 +1,7 @@
 .hero {
   position: relative;
-  background-image: url("https://img.freepik.com/premium-photo/professional-cleaning-service-team-cleans-living-room-modern-apartment_130111-3783.jpg?size=626&ext=jpg");
+  background-image: url("../../../../public/home.jpg");
+  /* https://img.freepik.com/premium-photo/professional-cleaning-service-team-cleans-living-room-modern-apartment_130111-3783.jpg?size=626&ext=jpg */
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
