@@ -86,7 +86,6 @@
  
  /*Button*/
  .card-button {
-  border: 1px solid #252525;
   display: flex;
   padding: .3em;
   cursor: pointer;
@@ -100,12 +99,7 @@
   box-shadow: #8d99ae 0px 13px 47px -5px, #8d99ae 0px 8px 16px -8px;
  }
  
- .card-button:hover {
-  border: 1px solid #edede9;
-  background-color: #8d99ae;
-  
-  color: white;
- }
+
 
 
  

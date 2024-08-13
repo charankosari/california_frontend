@@ -13,7 +13,6 @@ const Header = () => {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      once: false, 
     });
   }, []);
   return (

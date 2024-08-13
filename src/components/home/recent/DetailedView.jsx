@@ -62,7 +62,7 @@ const DetailedView = () => {
 
   useEffect(() => {
     if (!service) return;
-if(localStorage.getItem('jwtToken')===null){
+if(localStorage.getItem('jwtToken')===null){      
   alert('please login to book a service');
   history.push('/login')
   return;
@@ -79,7 +79,7 @@ if(localStorage.getItem('jwtToken')===null){
         );
         const data = response.data.user;
         setUserData(data);
-        const favoriteServiceIds = data.wishList.map((item) => item.service._id);
+        const favoriteServiceIds = data.wishList.map((item) => item.service);
         setIsFavorited(favoriteServiceIds.includes(service._id));
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -99,18 +99,15 @@ if(localStorage.getItem('jwtToken')===null){
       const filteredSlotsData = Object.keys(slotsData).reduce((acc, date) => {
         const slotDate = moment(date);
     
-        // Compare slotDate with currentDate
         if (
           slotDate.isAfter(currentDate, 'day') || 
           (slotDate.isSame(currentDate, 'day') && currentTime < 12)
         ) {
-          acc[date] = slotsData[date]; // Add to the accumulator if the date is valid
+          acc[date] = slotsData[date]; 
         }
     
         return acc;
       }, {});
-    
-      // Update the state with filtered slots and available dates
       setBookingSlots(filteredSlotsData);
       setAvailableDates(Object.keys(filteredSlotsData));
     };
@@ -172,7 +169,7 @@ if(localStorage.getItem('jwtToken')===null){
       setAlertSeverity("error");
     } finally {
       setLoading(false);
-      setAlertOpen(true);
+      setAlertOpen(true);   
     }
   };
 
@@ -245,7 +242,7 @@ if(localStorage.getItem('jwtToken')===null){
           <Typography variant="h3" gutterBottom>
             Service Details
           </Typography>
-          <Typography variant="body1" style={{ marginTop: 20 }}>
+          <Typography variant="body1" style={{ marginTop: 20 }} sx={{minHeight:'40vh'}}>
             Service data not found.
           </Typography>
         </Container>
@@ -280,10 +277,9 @@ if(localStorage.getItem('jwtToken')===null){
               </IconButton>
               <CardHeader
                 title={
-                  service.service.charAt(0).toUpperCase() +
+                 'Selected Service : '+ service.service.charAt(0).toUpperCase() +
                   service.service.slice(1)
                 }
-                subheader={`Price: $${service.amount}`}
               />
               <img
                 src={service.image || "https://via.placeholder.com/800x400"}
@@ -301,7 +297,7 @@ if(localStorage.getItem('jwtToken')===null){
               <Divider style={{ margin: "20px 0" }} />
              
               <Typography variant="body2" color="textSecondary">
-                <strong>Phone:</strong> {service.number}
+                <strong>Name:</strong> {service.name}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 <strong>Address:</strong>{" "}

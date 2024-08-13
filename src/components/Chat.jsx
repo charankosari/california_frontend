@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaUserCircle } from 'react-icons/fa';
+import { VscRobot } from "react-icons/vsc";
 import './Chat.css';
 
 const Chat = ({ onClose }) => {
@@ -81,7 +81,8 @@ const Chat = ({ onClose }) => {
     <div className="mobile-chat-container">
       <div className="mobile-chat-border">
         <div className="chat-header">
-          <FaUserCircle className="profile-icon" />
+          <VscRobot className="profile-icon" />
+
           <h5>Chatbot</h5>
           <button className="close-button" onClick={handleCloseChat}>✖</button>
         </div>
