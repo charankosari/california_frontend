@@ -46,8 +46,8 @@ const RecentCard = () => {
     const fetchServices = async () => {
       try {
         const response = await axios.get(`${url}/api/c3/ser/allservice`);
-        const allServices = response.data.services;
-
+        let allServices = response.data.services; 
+        allServices = allServices.filter(service => service.role === 'service');
         const today = moment().format("YYYY-MM-DD");
         const noon = moment().set({ hour: 12, minute: 0, second: 0 });
 

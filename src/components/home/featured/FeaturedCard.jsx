@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import AcUnitIcon from '@mui/icons-material/AcUnit';
 import PlumbingIcon from '@mui/icons-material/Plumbing';
 import BoltIcon from '@mui/icons-material/Bolt';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
@@ -59,9 +58,9 @@ const FeaturedCard = () => {
       try {
         const response = await axios.get('https://oneapp.trivedagroup.com/api/c3/ser/allservice');
         let fetchedServices = response.data.services;
+        fetchedServices = fetchedServices.filter(service => service.role === 'service');
         fetchedServices = filterValidServices(fetchedServices);
         setServices(fetchedServices);
-  
         const counts = fetchedServices.reduce((acc, service) => {
           if (service.hasValidBooking) {
             const normalizedService = normalizeString(service.service);
